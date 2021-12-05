@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def projectPoints(points_3d, K, D=np.zeros((2, 1))):
+def projectPoints(points_3d, K, D=np.zeros((4, 1))):
     """ Projects 3d points to the image plane (3xN), given the camera matrix (3x3) and
      distortion coefficients (2x1).
 
@@ -44,14 +44,16 @@ def distortPoints(projected_points, D, K):
     # distortion
     u0 = K[0][2]
     v0 = K[1][2]
-
+    
     xp = projected_points[:1][0] - u0
     yp = projected_points[1:2][0] - v0
 
-    d1, d2 = D
-    r2 = xp ** 2 + yp ** 2
-    m = (1 + d1 * r2 + d2 * r2 ** 2)
+    d1, d2, p1, p2 = D
+    
+    r2 = xp*xp+ yp*yp
+    m = (1 + d1 * r2 + d2 * r2 * r2)
     xpp = (xp * m + u0)
     ypp = (yp * m + v0)
+    
 
     return xpp, ypp
